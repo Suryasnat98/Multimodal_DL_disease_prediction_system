@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAI Diagnosis Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- <link rel="stylesheet" href="C:\Users\Taniya Bhunia\Downloads\Gradcam Working (2)\Hackathon\project\static\style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════
+     TOAST NOTIFICATION CONTAINER
+══════════════════════════════════════ -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ══════════════════════════════════════
+     AUTH PAGE (LOGIN + SIGNUP)
+══════════════════════════════════════ -->
+    <div id="authPage">
+        <div class="auth-card">
+
+            <div class="auth-brand">
+                <div class="auth-brand-icon">🧠</div>
+                <div>
+                    <div class="auth-brand-name">MedAI</div>
+                    <div class="auth-brand-sub">Diagnostics Platform</div>
+                </div>
+            </div>
+
+            <!-- ── LOGIN PANE ── -->
+            <div class="auth-pane active" id="paneLogin">
+                <div class="auth-heading">Welcome back</div>
+                <div class="auth-sub">Sign in to your account to continue.</div>
+
+                <div class="auth-alert error" id="loginAlert">⚠️ <span id="loginAlertTxt"></span></div>
+
+                <div class="auth-field">
+                    <label class="auth-label">Email Address</label>
+                    <input class="auth-input" id="liEmail" type="email" placeholder="you@example.com"
+                        autocomplete="email">
+                    <div class="err-msg" id="liEmailErr"></div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Password</label>
+                    <div class="pw-wrap">
+                        <input class="auth-input" id="liPass" type="password" placeholder="Enter your password"
+                            autocomplete="current-password">
+                        <button class="pw-eye" type="button" onclick="togglePw('liPass',this)">👁</button>
+                    </div>
+                    <div class="err-msg" id="liPassErr"></div>
+                </div>
+
+                <button class="auth-btn" id="loginBtn" onclick="doLogin()">
+                    <div class="btn-spin" id="loginSpin"></div>
+                    <span id="loginBtnTxt">Sign In</span>
+                </button>
+
+                <div class="auth-divider">or</div>
+                <button class="auth-switch" onclick="switchPane('signup')">Create a new account →</button>
+                <div class="auth-footer"><a
+                        onclick="showToast('Password reset would be sent to your email. (demo)','info')">Forgot your
+                        password?</a></div>
+            </div>
+
+            <!-- ── SIGNUP PANE ── -->
+            <div class="auth-pane" id="paneSignup">
+                <div class="auth-heading">Create account</div>
+                <div class="auth-sub">Fill in your details to get started for free.</div>
+
+                <div class="auth-alert error" id="signupAlert">⚠️ <span id="signupAlertTxt"></span></div>
+                <div class="auth-alert success" id="signupSuccess">✓ Account created! Redirecting to sign in…</div>
+
+                <div class="field-row">
+                    <div class="auth-field">
+                        <label class="auth-label">First Name</label>
+                        <input class="auth-input" id="suFirst" type="text" placeholder="Jane" autocomplete="given-name">
+                        <div class="err-msg" id="suFirstErr"></div>
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label">Last Name</label>
+                        <input class="auth-input" id="suLast" type="text" placeholder="Smith"
+                            autocomplete="family-name">
+                        <div class="err-msg" id="suLastErr"></div>
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Email Address</label>
+                    <input class="auth-input" id="suEmail" type="email" placeholder="you@example.com"
+                        autocomplete="email">
+                    <div class="err-msg" id="suEmailErr"></div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Password</label>
+                    <div class="pw-wrap">
+                        <input class="auth-input" id="suPass" type="password" placeholder="At least 8 characters"
+                            autocomplete="new-password" oninput="checkStrength(this.value)">
+                        <button class="pw-eye" type="button" onclick="togglePw('suPass',this)">👁</button>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-label" id="strengthLabel"></div>
+                    <div class="pw-reqs" id="pwReqs">
+                        <div class="req-list">
+                            <div class="req" id="req-len">At least 8 characters</div>
+                            <div class="req" id="req-upper">One uppercase letter</div>
+                            <div class="req" id="req-num">One number</div>
+                            <div class="req" id="req-special">One special character</div>
+                        </div>
+                    </div>
+                    <div class="err-msg" id="suPassErr"></div>
+                </div>
+                <div class="auth-field">
+                    <label class="auth-label">Confirm Password</label>
+                    <div class="pw-wrap">
+                        <input class="auth-input" id="suConf" type="password" placeholder="Repeat your password"
+                            autocomplete="new-password">
+                        <button class="pw-eye" type="button" onclick="togglePw('suConf',this)">👁</button>
+                    </div>
+                    <div class="err-msg" id="suConfErr"></div>
+                </div>
+
+                <button class="auth-btn" id="signupBtn" onclick="doSignup()">
+                    <div class="btn-spin" id="signupSpin"></div>
+                    <span id="signupBtnTxt">Create Account</span>
+                </button>
+
+                <div class="auth-divider">or</div>
+                <button class="auth-switch" onclick="switchPane('login')">← Already have an account? Sign in</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     MAIN APP (hidden until login)
+══════════════════════════════════════ -->
+    <div id="mainApp" style="display:none;flex-direction:column;height:100vh;">
+
+        <!-- TOP NAV -->
+        <header class="topnav">
+            <div class="brand">
+                <div class="brand-icon">🧠</div>
+                <div>
+                    <div class="brand-name">MedAI</div>
+                    <div class="brand-sub">Diagnostics</div>
+                </div>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showPage('dashboard',this)">🏠 Dashboard</button>
+                <button class="nav-tab" onclick="showPage('history',this)">🕐 History <span class="badge"
+                        id="histBadge">0</span></button>
+                <button class="nav-tab" onclick="showPage('reports',this)">📋 Reports</button>
+            </div>
+            <div class="nav-right">
+                <div class="status-pill">
+                    <div class="dot"></div> AI Active
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;" title="Toggle light/dark theme">
+                    <span class="theme-icon" id="themeIconLeft">🌙</span>
+                    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()"></div>
+                    <span class="theme-icon" id="themeIconRight">☀️</span>
+                </div>
+                <div class="user-pill">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <span class="user-name" id="userDisplayName">User</span>
+                    <button class="logout-btn" onclick="doLogout()">↪ Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- PAGES -->
+        <div class="pages">
+
+            <!-- ══ DASHBOARD ══ -->
+            <div class="page active" id="pg-dashboard">
+
+                <!-- INPUT COL -->
+                <div class="col-input">
+                    <div class="sec-title"><span class="icon">📝</span><span>Input</span></div>
+
+                    <div>
+                        <div class="field-label">Symptoms (Optional)</div>
+                        <div class="symptom-row">
+                            <input class="symptom-input" id="sympInput" placeholder="e.g. fever, headache, skin rash…">
+                            <div class="icon-btn" id="micBtn" title="Click to use voice input" onclick="startVoice()">🎙
+                            </div>
+                        </div>
+                        <div class="lang-row" id="langRow">
+                            <button class="lang-btn active" data-lang="en-US" onclick="setLang(this)">🇺🇸 EN</button>
+                            <button class="lang-btn" data-lang="hi-IN" onclick="setLang(this)">🇮🇳 HI</button>
+                            <button class="lang-btn" data-lang="fr-FR" onclick="setLang(this)">🇫🇷 FR</button>
+                            <button class="lang-btn" data-lang="es-ES" onclick="setLang(this)">🇪🇸 ES</button>
+                            <button class="lang-btn" data-lang="de-DE" onclick="setLang(this)">🇩🇪 DE</button>
+                            <button class="lang-btn" data-lang="ar-SA" onclick="setLang(this)">🇸🇦 AR</button>
+                        </div>
+                        <div class="voice-status" id="voiceStatus">
+                            <div class="vs-dot"></div>
+                            <span id="voiceStatusTxt">Listening… speak now</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="field-label" style="margin-bottom:8px;">📸 Upload Image (Optional)</div>
+                        <img id="previewImg" class="preview-img" src="" alt="preview" style="margin-bottom:10px;">
+                        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                            <div class="uz-icon">☁️</div>
+                            <div class="uz-text"><b>Drag & Drop Image Here</b></div>
+                            <div class="uz-or">or</div>
+                            <button class="select-btn"
+                                onclick="event.stopPropagation();document.getElementById('fileInput').click()">Select
+                                File</button>
+                            <div class="uz-hint" id="fileName">No file selected · JPG, PNG, JPEG (max 5MB)</div>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)">
+                    </div>
+
+                    <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()">
+                        <div class="spin" id="spinner"></div>
+                        <span id="btnTxt">⚡ &nbsp;Analyze</span>
+                    </button>
+
+                    <div class="disc-box">
+                        🛡️ <span>Your data is processed locally and is 100% private. Results do not replace
+                            professional medical advice.</span>
+                    </div>
+                </div>
+
+                <!-- RESULTS COL -->
+                <div class="col-results">
+                    <div class="sec-title"><span class="icon">📊</span><span>Results</span></div>
+
+                    <!-- SHIMMER LOADING STATE -->
+                    <div id="shimmerState" style="display:none;">
+                        <div class="shimmer-block" style="height:82px;border-radius:13px;margin-bottom:18px;"></div>
+                        <div class="shimmer-block" style="height:96px;border-radius:13px;margin-bottom:18px;"></div>
+                        <div class="shimmer-block" style="height:130px;border-radius:13px;margin-bottom:18px;"></div>
+                        <div class="shimmer-block" style="height:110px;border-radius:13px;"></div>
+                    </div>
+
+                    <div id="waitState" class="waiting-state">
+                        <div class="w-icon">🔬</div>
+                        <p>Primary Diagnosis: <span style="color:var(--cyan)">Waiting…</span></p>
+                        <p style="margin-top:8px;">Mode: —</p>
+                        <p style="margin-top:16px;font-size:12px;">Upload an image or enter symptoms and click
+                            <b>Analyze</b>
+                        </p>
+                    </div>
+
+                    <!-- CONFLICT RESULT STATE -->
+                    <div id="conflictState" style="display:none;">
+                        <div class="conflict-banner">
+                            <div class="conflict-icon">⚡</div>
+                            <div>
+                                <div class="conflict-title">Model Disagreement Detected</div>
+                                <div class="conflict-sub">Image and symptom models returned different results. Manual
+                                    review recommended.</div>
+                            </div>
+                        </div>
+                        <div class="conflict-grid">
+                            <div class="conflict-card image-card">
+                                <div class="cc-label">🖼 Image Model</div>
+                                <div class="cc-diag" id="conflictImgDiag">—</div>
+                                <div class="cc-conf" id="conflictImgConf">—</div>
+                            </div>
+                            <div class="conflict-card symptom-card">
+                                <div class="cc-label">📝 Symptom Model</div>
+                                <div class="cc-diag" id="conflictSymDiag">—</div>
+                                <div class="cc-conf" id="conflictSymConf">—</div>
+                            </div>
+                        </div>
+                        <div class="sugg-card high-risk" style="margin-top:16px;">
+                            <div class="sugg-header"><span class="sugg-icon">⚠️</span><span>Recommendations</span></div>
+                            <div class="sugg-list" id="conflictSugg"></div>
+                        </div>
+                    </div>
+
+                    <div id="resultState" style="display:none;">
+                        <div class="diag-banner" id="diagBanner">
+                            <div>
+                                <div class="diag-label">Primary Diagnosis</div>
+                                <div class="diag-val" id="diagVal">—</div>
+                            </div>
+                            <div class="diag-icon" id="diagIcon">—</div>
+                        </div>
+
+                        <div class="conf-block">
+                            <div class="conf-section-label">Confidence Score</div>
+                            <div class="conf-num" id="confNum">0%</div>
+                            <div class="conf-track">
+                                <div class="conf-fill" id="confFill" style="width:0%"></div>
+                            </div>
+                            <div class="conf-tag" id="confTag">—</div>
+                        </div>
+
+                        <div class="pred-card">
+                            <div class="pred-card-title">Top Predictions</div>
+                            <div id="predList"></div>
+                        </div>
+
+                        <!-- SUGGESTIONS CARD -->
+                        <div class="sugg-card" id="suggCard" style="display:none;">
+                            <div class="sugg-header">
+                                <span class="sugg-icon">💊</span>
+                                <span>AI Recommendations</span>
+                                <span class="sugg-risk-tag" id="suggRiskTag"></span>
+                            </div>
+                            <div class="sugg-list" id="suggList"></div>
+                            <div class="sugg-footer">⚕️ These are AI-generated suggestions. Always consult a qualified
+                                physician.</div>
+                        </div>
+
+                        <div class="disc-box">
+                            ℹ️ <span>This prediction is generated by AI and should not replace professional medical
+                                advice. Consult a dermatologist for confirmation.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRAD-CAM COL -->
+                <div class="col-cam">
+                    <div class="sec-title"><span class="icon">🔥</span><span>Grad-CAM Heatmap</span></div>
+
+                    <div class="cam-tabs">
+                        <button class="cam-tab active" onclick="camTab(this,'original')">Original</button>
+                        <button class="cam-tab" onclick="camTab(this,'heatmap')">Heatmap</button>
+                        <button class="cam-tab" onclick="camTab(this,'overlay')">Overlay</button>
+                    </div>
+
+                    <div class="cam-frame" id="camFrame">
+                        <div id="camEmpty" class="cam-placeholder">
+                            <div class="cp-icon">🖼</div>
+                            <p>Heatmap Preview</p>
+                            <p style="font-size:10px;margin-top:4px;">Appears after image analysis</p>
+                        </div>
+                        <!-- REAL GRADCAM IMAGE -->
+                        <img id="camImg" class="cam-real-img" src="" alt="GradCAM" style="display:none;">
+                        <!-- SHIMMER for cam -->
+                        <div id="camShimmer" class="cam-shimmer" style="display:none;"></div>
+                    </div>
+
+                    <div class="cam-note">
+                        ℹ️ <span>Grad-CAM highlights the regions that most influenced the model's classification
+                            decision.</span>
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        <div class="field-label">Analysis Mode</div>
+                        <div id="modeTag" style="font-size:13px;color:var(--text2);">—</div>
+                    </div>
+
+                    <div style="margin-top:14px;">
+                        <div class="field-label">AI Insight</div>
+                        <div id="insightMini" style="font-size:12.5px;color:var(--text3);line-height:1.6;">
+                            💬 AI Insight will appear here
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /dashboard -->
+
+            <!-- ══ HISTORY ══ -->
+            <div class="page" id="pg-history">
+                <div class="page-inner">
+                    <div class="page-head">
+                        <h2>🕐 Diagnosis History</h2>
+                        <p>All past analysis sessions — click any record to view full details</p>
+                    </div>
+                    <div class="hist-filters">
+                        <input class="search-bar" id="histSearch" placeholder="🔍  Search by diagnosis, symptoms…"
+                            oninput="renderHistory()">
+                        <button class="filt-btn active" onclick="setFilter(this,'all')">All</button>
+                        <button class="filt-btn" onclick="setFilter(this,'benign')">✅ Benign</button>
+                        <button class="filt-btn" onclick="setFilter(this,'malignant')">⚠️ Malignant</button>
+                        <button class="filt-btn" onclick="setFilter(this,'warning')">🔶 Warning</button>
+                        <button class="filt-btn" onclick="setFilter(this,'conflict')">⚡ Conflict</button>
+                    </div>
+                    <div class="hist-grid" id="histGrid"></div>
+                    <div class="empty-state" id="histEmpty" style="display:none;">
+                        <div class="es-icon">🔬</div>
+                        <p>No records yet. Run an analysis on the Dashboard to get started.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ REPORTS ══ -->
+            <div class="page" id="pg-reports">
+                <div class="page-inner">
+                    <div class="page-head">
+                        <h2>📋 Reports & Analytics</h2>
+                        <p>Aggregated statistics and visual breakdown of all past diagnoses</p>
+                    </div>
+                    <div class="rep-summary" id="repSummary">
+                        <div class="rep-stat">
+                            <div class="rs-label">Total Analyses</div>
+                            <div class="rs-val" id="rTotal" style="color:var(--cyan)">0</div>
+                            <div class="rs-sub">All time</div>
+                        </div>
+                        <div class="rep-stat">
+                            <div class="rs-label">Benign Results</div>
+                            <div class="rs-val" id="rBenign" style="color:var(--green)">0</div>
+                            <div class="rs-sub" id="rBenignPct">—</div>
+                        </div>
+                        <div class="rep-stat">
+                            <div class="rs-label">Malignant / Warning</div>
+                            <div class="rs-val" id="rMal" style="color:var(--pink)">0</div>
+                            <div class="rs-sub" id="rMalPct">—</div>
+                        </div>
+                        <div class="rep-stat">
+                            <div class="rs-label">Avg Confidence</div>
+                            <div class="rs-val" id="rAvgConf" style="color:var(--amber)">—</div>
+                            <div class="rs-sub">Across all sessions</div>
+                        </div>
+                    </div>
+                    <div class="rep-charts">
+                        <div class="rep-chart-card">
+                            <div class="rcc-title">Diagnosis Distribution</div>
+                            <div class="bar-chart" id="distChart"></div>
+                        </div>
+                        <div class="rep-chart-card">
+                            <div class="rcc-title">Recent Timeline</div>
+                            <div class="timeline" id="tlChart"></div>
+                        </div>
+                    </div>
+                    <div class="rep-table-card">
+                        <div class="rt-head">
+                            <h3>All Records</h3>
+                            <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Diagnosis</th>
+                                    <th>Confidence</th>
+                                    <th>Symptoms</th>
+                                    <th>Badge</th>
+                                </tr>
+                            </thead>
+                            <tbody id="repTable"></tbody>
+                        </table>
+                        <div class="empty-state" id="repEmpty" style="display:none;padding:30px 0;">
+                            <div class="es-icon">📋</div>
+                            <p>No data yet. Run analyses to populate reports.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /pages -->
+
+        <!-- FOOTER -->
+        <div class="dash-footer">
+            <div class="footer-feat">
+                <div class="ff-icon">📸</div>
+                <div>
+                    <div class="ff-label">High Accuracy</div>
+                    <div class="ff-sub">Trusted AI Models</div>
+                </div>
+            </div>
+            <div class="footer-privacy">🛡️ Your data is 100% secure and private</div>
+            <div class="footer-feat">
+                <div class="ff-icon">⚡</div>
+                <div>
+                    <div class="ff-label">Fast Results</div>
+                    <div class="ff-sub">Real-time Analysis</div>
+                </div>
+            </div>
+            <div class="footer-feat">
+                <div class="ff-icon">🔒</div>
+                <div>
+                    <div class="ff-label">Secure & Private</div>
+                    <div class="ff-sub">Your Data, Protected</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /mainApp -->
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" id="modalBox">
+            <div class="modal-head">
+                <h3 id="modalTitle">Diagnosis Detail</h3>
+                <button class="modal-close" onclick="closeModalBtn()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
