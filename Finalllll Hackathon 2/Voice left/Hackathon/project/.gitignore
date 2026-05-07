@@ -13,6 +13,7 @@ env/
 *.h5
 *.keras
 *.ckpt
+*.pkl
 
 # Dataset folders
 dataset/
